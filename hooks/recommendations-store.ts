@@ -121,6 +121,21 @@ export const [RecommendationsProvider, useRecommendations] = createContextHook((
     };
   };
 
+  // Apply search filters
+  const applyFilters = (filters: SearchFilters) => {
+    setSearchFilters(filters);
+  };
+
+  // Clear all filters
+  const clearFilters = () => {
+    setSearchFilters({});
+  };
+
+  // Toggle recommendations on/off
+  const toggleRecommendations = () => {
+    setIsRecommendationsEnabled(prev => !prev);
+  };
+
   // Ensure we always return a valid object structure
   if (!currentUser) {
     return {
