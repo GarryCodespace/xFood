@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, FlatList, Pressable, RefreshControl } from 'react-native';
+import { StyleSheet, View, Text, FlatList, Pressable, RefreshControl, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
 import { CircleCard } from '@/components/CircleCard';
 import { TagList } from '@/components/TagList';
 import { EventCard } from '@/components/EventCard';
 import { BakeRequestCard } from '@/components/BakeRequestCard';
+import { PastryCard } from '@/components/PastryCard';
 import { mockCircles } from '@/mocks/circles';
 import { mockEvents } from '@/mocks/events';
 import { mockRequests } from '@/mocks/requests';
+import { mockPosts } from '@/mocks/posts';
+import { mockUsers } from '@/mocks/users';
 import { Colors } from '@/constants/colors';
-import { Plus, Calendar, MessageSquare } from 'lucide-react-native';
+import { Plus, Calendar, MessageSquare, Search, MapPin, Filter } from 'lucide-react-native';
 
 // Extract all unique tags from circles
 const allTags = Array.from(
@@ -24,8 +27,10 @@ const circleTypes = Array.from(
 export default function CirclesScreen() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedType, setSelectedType] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'circles' | 'events' | 'requests'>('circles');
+  const [activeTab, setActiveTab] = useState<'discover' | 'circles' | 'events' | 'requests'>('discover');
   const [refreshing, setRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [locationFilter, setLocationFilter] = useState('');
   const router = useRouter();
 
   const handleSelectTag = (tag: string) => {
@@ -81,8 +86,80 @@ export default function CirclesScreen() {
     console.log('Respond to request:', requestId);
   };
 
+  // Filter posts based on search and location
+  const filteredPosts = mockPosts.filter(post => {
+    const matchesSearch = !searchQuery || 
+      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    const matchesLocation = !locationFilter || 
+      post.location.toLowerCase().includes(locationFilter.toLowerCase());
+    
+    return matchesSearch && matchesLocation;
+  });
+
   const renderTabContent = () => {
     switch (activeTab) {
+      case 'discover':
+        return (
+          <FlatList
+            data={filteredPosts}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <PastryCard 
+                post={item} 
+                onReport={(postId) => router.push(`/report?postId=${postId}`)}
+              />
+            )}
+            contentContainerStyle={styles.listContent}
+            ListHeaderComponent={
+              <>
+                <View style={styles.searchContainer}>
+                  <View style={styles.searchInputContainer}>
+                    <Search size={20} color={Colors.textLight} />
+                    <TextInput
+                      style={styles.searchInput}
+                      placeholder="Search pastries, circles, bakers..."
+                      value={searchQuery}
+                      onChangeText={setSearchQuery}
+                      placeholderTextColor={Colors.textLight}
+                    />
+                  </View>
+                  <Pressable style={styles.filterButton}>
+                    <Filter size={20} color={Colors.primary} />
+                  </Pressable>
+                </View>
+                
+                <View style={styles.locationContainer}>
+                  <MapPin size={16} color={Colors.textLight} />
+                  <TextInput
+                    style={styles.locationInput}
+                    placeholder="Filter by location..."
+                    value={locationFilter}
+                    onChangeText={setLocationFilter}
+                    placeholderTextColor={Colors.textLight}
+                  />
+                </View>
+              </>
+            }
+            ListEmptyComponent={
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>No pastries found</Text>
+                <Text style={styles.emptySubtext}>Try adjusting your search or location filters</Text>
+              </View>
+            }
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor={Colors.primary}
+                colors={[Colors.primary]}
+              />
+            }
+          />
+        );
+      
       case 'events':
         return (
           <FlatList
@@ -202,7 +279,7 @@ export default function CirclesScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.heading}>Pastry Community</Text>
+        <Text style={styles.heading}>Community</Text>
         <Pressable style={styles.createButton} onPress={handleCreateCircle}>
           <Plus size={20} color={Colors.white} />
           <Text style={styles.createButtonText}>New Circle</Text>
@@ -210,6 +287,23 @@ export default function CirclesScreen() {
       </View>
       
       <View style={styles.tabContainer}>
+        <Pressable
+          style={[
+            styles.tab,
+            activeTab === 'discover' && styles.activeTab
+          ]}
+          onPress={() => setActiveTab('discover')}
+        >
+          <Search size={16} color={activeTab === 'discover' ? Colors.primary : Colors.textLight} />
+          <Text 
+            style={[
+              styles.tabText,
+              activeTab === 'discover' && styles.activeTabText
+            ]}
+          >
+            Discover
+          </Text>
+        </Pressable>
         <Pressable
           style={[
             styles.tab,
@@ -370,5 +464,61 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.textLight,
     textAlign: 'center',
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: Colors.textLight,
+    textAlign: 'center',
+    marginTop: 8,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    gap: 12,
+  },
+  searchInputContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.white,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: Colors.text,
+    marginLeft: 8,
+  },
+  filterButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: Colors.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.white,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  locationInput: {
+    flex: 1,
+    fontSize: 16,
+    color: Colors.text,
+    marginLeft: 8,
   },
 });

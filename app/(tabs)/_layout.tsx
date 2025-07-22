@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { Home, Users, User, Search, MessageCircle, ChefHat, HelpCircle } from "lucide-react-native";
+import { Home, Users, User, MessageCircle, ChefHat } from "lucide-react-native";
 import React from "react";
 import { Colors } from "@/constants/colors";
 
@@ -31,13 +31,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="discover"
-        options={{
-          title: "Discover",
-          tabBarIcon: ({ color }) => <Search color={color} size={24} />,
-        }}
-      />
-      <Tabs.Screen
         name="recipes"
         options={{
           title: "Recipes",
@@ -47,7 +40,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="circles"
         options={{
-          title: "Circles",
+          title: "Community",
           tabBarIcon: ({ color }) => <Users color={color} size={24} />,
         }}
       />
@@ -56,13 +49,6 @@ export default function TabLayout() {
         options={{
           title: "Messages",
           tabBarIcon: ({ color }) => <MessageCircle color={color} size={24} />,
-        }}
-      />
-      <Tabs.Screen
-        name="support"
-        options={{
-          title: "Support",
-          tabBarIcon: ({ color }) => <HelpCircle color={color} size={24} />,
         }}
       />
       <Tabs.Screen

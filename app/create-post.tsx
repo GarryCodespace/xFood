@@ -20,6 +20,7 @@ import { AllergenTagList } from '@/components/AllergenTagList';
 import { AllergenTag, SpecialTag } from '@/types';
 import { useToast } from '@/hooks/toast-store';
 import { apiService } from '@/utils/api';
+import { useAuth } from '@/hooks/auth-store';
 
 const deliveryOptions = ['Pickup Only', 'Delivery Available'] as const;
 
@@ -39,6 +40,7 @@ export default function CreatePostScreen() {
   
   const router = useRouter();
   const { showSuccess, showError } = useToast();
+  const { currentUser } = useAuth();
 
   const handleAddIngredient = () => {
     setIngredients([...ingredients, '']);
@@ -136,7 +138,7 @@ export default function CreatePostScreen() {
         tags: [...tags, ...allergenTags, ...specialTags],
         allergenTags,
         specialTags,
-        userId: 'current_user_id', // Replace with actual user ID
+        userId: currentUser?.id || 'anonymous',
         timestamp: new Date().toISOString(),
       };
 
@@ -164,7 +166,7 @@ export default function CreatePostScreen() {
       
       // Navigate back to home after a short delay
       setTimeout(() => {
-        router.replace('/');
+        router.replace('/(tabs)');
       }, 1500);
     } catch (error) {
       console.error('Post creation error:', error);

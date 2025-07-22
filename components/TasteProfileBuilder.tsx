@@ -28,7 +28,7 @@ export function TasteProfileBuilder({ initialProfile, onSave, onSkip }: TastePro
     }
   };
 
-  const toggleAllergenSelection = (item: AllergenTag, list: AllergenTag[], setList: (list: AllergenTag[]) => void) => {
+  const toggleAllergenSelection = (item: AllergenTag, list: AllergenTag[], setList: React.Dispatch<React.SetStateAction<AllergenTag[]>>) => {
     if (list.includes(item)) {
       setList(list.filter(i => i !== item));
     } else {

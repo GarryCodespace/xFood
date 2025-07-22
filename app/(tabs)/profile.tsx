@@ -8,7 +8,7 @@ import { PaymentSetup } from '@/components/PaymentSetup';
 import { mockPosts } from '@/mocks/posts';
 import { mockRecipes } from '@/mocks/recipes';
 import { Colors } from '@/constants/colors';
-import { LogOut, Shield, Settings, DollarSign, TrendingUp } from 'lucide-react-native';
+import { LogOut, Shield, Settings, DollarSign, TrendingUp, HelpCircle } from 'lucide-react-native';
 import { useAuth } from '@/hooks/auth-store';
 
 export default function ProfileScreen() {
@@ -49,6 +49,10 @@ export default function ProfileScreen() {
 
   const handleEarnings = () => {
     router.push('/earnings');
+  };
+
+  const handleSupport = () => {
+    router.push('/(tabs)/support');
   };
 
   const renderContent = () => {
@@ -129,6 +133,11 @@ export default function ProfileScreen() {
               <Pressable style={styles.actionButton}>
                 <Settings size={20} color={Colors.textLight} />
                 <Text style={styles.actionButtonText}>Settings</Text>
+              </Pressable>
+              
+              <Pressable style={styles.actionButton} onPress={handleSupport}>
+                <HelpCircle size={20} color={Colors.primary} />
+                <Text style={styles.actionButtonText}>Support</Text>
               </Pressable>
             </View>
 
@@ -216,6 +225,7 @@ const styles = StyleSheet.create({
   },
   actionsContainer: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     marginBottom: 16,
     gap: 12,
   },
@@ -226,7 +236,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 8,
-    flex: 1,
+    minWidth: '45%',
     shadowColor: Colors.shadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,

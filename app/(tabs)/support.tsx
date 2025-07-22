@@ -4,7 +4,7 @@ import { Search, MessageSquare, FileText, ChevronRight } from 'lucide-react-nati
 import { Colors } from '@/constants/colors';
 import { useSupport } from '@/hooks/support-store';
 import { FAQ } from '@/types';
-import { mockFAQs } from '@/mocks/support';
+import { mockFAQs, supportCategories } from '@/mocks/support';
 import { router } from 'expo-router';
 
 export default function SupportScreen() {

@@ -12,6 +12,8 @@ export const Colors = {
   lightGray: "#F5F5F5",
   border: "#E8E8E8",
   success: "#4CAF50",
+  successLight: "#E8F5E8",
   error: "#F44336",
+  errorLight: "#FFF2F2",
   shadow: "rgba(0, 0, 0, 0.1)",
 };

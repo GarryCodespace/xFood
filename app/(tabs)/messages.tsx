@@ -14,6 +14,7 @@ import { Colors } from '@/constants/colors';
 import { Send, ArrowLeft } from 'lucide-react-native';
 import { mockUsers } from '@/mocks/users';
 import { ChatMessage } from '@/types';
+import { useToast } from '@/hooks/toast-store';
 
 // Mock chat data
 const mockChats = [
@@ -63,16 +64,32 @@ const mockMessages: ChatMessage[] = [
 export default function MessagesTab() {
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [messageText, setMessageText] = useState('');
+  const [messages, setMessages] = useState<ChatMessage[]>(mockMessages);
+  const { showSuccess, showError } = useToast();
 
   const handleBackToChats = () => {
     setSelectedChat(null);
   };
 
-  const handleSendMessage = () => {
-    if (messageText.trim()) {
-      // In a real app, this would send the message to the backend
-      console.log('Sending message:', messageText);
-      setMessageText('');
+  const handleSendMessage = async () => {
+    if (messageText.trim() && selectedChat) {
+      try {
+        const newMessage: ChatMessage = {
+          id: Date.now().toString(),
+          senderId: '1', // Current user ID
+          receiverId: selectedChat === '1' ? '2' : '1',
+          message: messageText.trim(),
+          timestamp: new Date().toISOString(),
+          read: false,
+        };
+        
+        setMessages(prev => [...prev, newMessage]);
+        setMessageText('');
+        showSuccess('Message sent!');
+      } catch (error) {
+        console.error('Failed to send message:', error);
+        showError('Failed to send message. Please try again.');
+      }
     }
   };
 
@@ -170,7 +187,10 @@ export default function MessagesTab() {
         </View>
         
         <FlatList
-          data={mockMessages}
+          data={messages.filter(msg => 
+            (msg.senderId === '1' && msg.receiverId === selectedChat) ||
+            (msg.senderId === selectedChat && msg.receiverId === '1')
+          )}
           keyExtractor={(item) => item.id}
           renderItem={renderMessage}
           style={styles.messagesList}

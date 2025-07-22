@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Community Pastry Sharing App",
-    "slug": "community-pastry-sharing-app",
+    "name": "xFood",
+    "slug": "xfood",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",

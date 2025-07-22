@@ -79,9 +79,9 @@ export const Toast: React.FC<ToastProps> = ({
   const getBackgroundColor = () => {
     switch (type) {
       case 'success':
-        return Colors.successLight || '#E8F5E8';
+        return Colors.successLight;
       case 'error':
-        return Colors.errorLight || '#FFF2F2';
+        return Colors.errorLight;
       default:
         return Colors.primaryLight;
     }
