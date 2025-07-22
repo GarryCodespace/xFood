@@ -1,0 +1,63 @@
+export const FLAVOR_TAGS = [
+  { value: 'chocolate', label: 'Chocolate', emoji: '🍫' },
+  { value: 'vanilla', label: 'Vanilla', emoji: '🍦' },
+  { value: 'strawberry', label: 'Strawberry', emoji: '🍓' },
+  { value: 'matcha', label: 'Matcha', emoji: '🍵' },
+  { value: 'coffee', label: 'Coffee', emoji: '☕' },
+  { value: 'caramel', label: 'Caramel', emoji: '🍮' },
+  { value: 'lemon', label: 'Lemon', emoji: '🍋' },
+  { value: 'coconut', label: 'Coconut', emoji: '🥥' },
+  { value: 'almond', label: 'Almond', emoji: '🌰' },
+  { value: 'cinnamon', label: 'Cinnamon', emoji: '🍂' },
+  { value: 'mint', label: 'Mint', emoji: '🌿' },
+  { value: 'orange', label: 'Orange', emoji: '🍊' },
+  { value: 'raspberry', label: 'Raspberry', emoji: '🫐' },
+  { value: 'honey', label: 'Honey', emoji: '🍯' },
+  { value: 'spiced', label: 'Spiced', emoji: '🌶️' },
+  { value: 'fruity', label: 'Fruity', emoji: '🍎' },
+  { value: 'nutty', label: 'Nutty', emoji: '🥜' },
+  { value: 'creamy', label: 'Creamy', emoji: '🥛' },
+];
+
+export const CUISINE_TYPES = [
+  { value: 'french', label: 'French', emoji: '🇫🇷' },
+  { value: 'italian', label: 'Italian', emoji: '🇮🇹' },
+  { value: 'japanese', label: 'Japanese', emoji: '🇯🇵' },
+  { value: 'korean', label: 'Korean', emoji: '🇰🇷' },
+  { value: 'american', label: 'American', emoji: '🇺🇸' },
+  { value: 'british', label: 'British', emoji: '🇬🇧' },
+  { value: 'german', label: 'German', emoji: '🇩🇪' },
+  { value: 'mexican', label: 'Mexican', emoji: '🇲🇽' },
+  { value: 'indian', label: 'Indian', emoji: '🇮🇳' },
+  { value: 'middle-eastern', label: 'Middle Eastern', emoji: '🕌' },
+  { value: 'scandinavian', label: 'Scandinavian', emoji: '🇸🇪' },
+  { value: 'mediterranean', label: 'Mediterranean', emoji: '🫒' },
+  { value: 'asian-fusion', label: 'Asian Fusion', emoji: '🥢' },
+  { value: 'european', label: 'European', emoji: '🏰' },
+];
+
+export const FOOD_TYPES = [
+  { value: 'cakes', label: 'Cakes', emoji: '🎂' },
+  { value: 'cookies', label: 'Cookies', emoji: '🍪' },
+  { value: 'bread', label: 'Bread', emoji: '🍞' },
+  { value: 'pastries', label: 'Pastries', emoji: '🥐' },
+  { value: 'muffins', label: 'Muffins', emoji: '🧁' },
+  { value: 'donuts', label: 'Donuts', emoji: '🍩' },
+  { value: 'pies', label: 'Pies', emoji: '🥧' },
+  { value: 'tarts', label: 'Tarts', emoji: '🍰' },
+  { value: 'cupcakes', label: 'Cupcakes', emoji: '🧁' },
+  { value: 'brownies', label: 'Brownies', emoji: '🍫' },
+  { value: 'macarons', label: 'Macarons', emoji: '🍪' },
+  { value: 'croissants', label: 'Croissants', emoji: '🥐' },
+  { value: 'bagels', label: 'Bagels', emoji: '🥯' },
+  { value: 'scones', label: 'Scones', emoji: '🫖' },
+  { value: 'buns', label: 'Buns', emoji: '🍞' },
+];
+
+export const RADIUS_OPTIONS = [
+  { value: 5, label: '5 km' },
+  { value: 10, label: '10 km' },
+  { value: 25, label: '25 km' },
+  { value: 50, label: '50 km' },
+  { value: 100, label: '100 km' },
+];
