@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, FlatList, RefreshControl, Pressable, SectionList } from 'react-native';
-import { Filter, Settings, Sparkles } from 'lucide-react-native';
+import { StyleSheet, View, Text, FlatList, RefreshControl, Pressable, SectionList, TextInput } from 'react-native';
+import { Filter, Settings, Sparkles, Search, MapPin } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { PastryCard } from '@/components/PastryCard';
 import { TagList } from '@/components/TagList';
@@ -34,6 +34,8 @@ export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<'all' | 'categories'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [locationQuery, setLocationQuery] = useState('');
 
   const handleSelectTag = (tag: string) => {
     setSelectedTags(prev => 
@@ -43,11 +45,24 @@ export default function HomeScreen() {
     );
   };
 
+  const searchFilteredPosts = filteredPosts.filter(post => {
+    const matchesSearch = !searchQuery || 
+      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.user?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    const matchesLocation = !locationQuery || 
+      post.location.toLowerCase().includes(locationQuery.toLowerCase());
+    
+    return matchesSearch && matchesLocation;
+  });
+
   const tagFilteredPosts = selectedTags.length > 0
-    ? filteredPosts.filter(post => 
+    ? searchFilteredPosts.filter(post => 
         selectedTags.some(tag => post.tags.includes(tag))
       )
-    : filteredPosts;
+    : searchFilteredPosts;
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -59,6 +74,42 @@ export default function HomeScreen() {
   const handlePostPress = (postId: string) => {
     trackInteraction({ type: 'view', postId });
   };
+
+  const handleContactBaker = (userId: string) => {
+    router.push(`/(tabs)/messages?userId=${userId}`);
+  };
+
+  const renderSearchHeader = () => (
+    <View style={styles.searchContainer}>
+      <View style={styles.searchInputContainer}>
+        <Search size={20} color={Colors.textLight} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search pastries, circles, bakers..."
+          placeholderTextColor={Colors.textLight}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+        <Pressable 
+          style={[styles.filterIconButton, hasActiveFilters && styles.activeFilterIconButton]}
+          onPress={() => setShowFilters(true)}
+        >
+          <Filter size={20} color={hasActiveFilters ? Colors.white : Colors.primary} />
+        </Pressable>
+      </View>
+      
+      <View style={styles.locationInputContainer}>
+        <MapPin size={20} color={Colors.textLight} />
+        <TextInput
+          style={styles.locationInput}
+          placeholder="Filter by location..."
+          placeholderTextColor={Colors.textLight}
+          value={locationQuery}
+          onChangeText={setLocationQuery}
+        />
+      </View>
+    </View>
+  );
 
   const renderHeader = () => (
     <>
@@ -161,6 +212,7 @@ export default function HomeScreen() {
           <PastryCard 
             post={item} 
             onPress={() => handlePostPress(item.id)}
+            onContact={handleContactBaker}
           />
         )}
         renderSectionHeader={({ section: { title } }) => (
@@ -194,6 +246,7 @@ export default function HomeScreen() {
         <PastryCard 
           post={item} 
           onPress={() => handlePostPress(item.id)}
+          onContact={handleContactBaker}
         />
       )}
       contentContainerStyle={styles.listContent}
@@ -216,6 +269,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      {renderSearchHeader()}
       {viewMode === 'categories' ? renderCategorizedView() : renderAllView()}
       
       <CreatePostButton />
@@ -361,5 +415,53 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.textLight,
     textAlign: 'center',
+  },
+  searchContainer: {
+    backgroundColor: Colors.white,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  searchInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.lightGray,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: Colors.text,
+    marginLeft: 8,
+    marginRight: 8,
+  },
+  filterIconButton: {
+    padding: 4,
+    borderRadius: 8,
+    backgroundColor: Colors.white,
+    borderWidth: 1,
+    borderColor: Colors.primary,
+  },
+  activeFilterIconButton: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+  },
+  locationInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.lightGray,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  locationInput: {
+    flex: 1,
+    fontSize: 16,
+    color: Colors.text,
+    marginLeft: 8,
   },
 });

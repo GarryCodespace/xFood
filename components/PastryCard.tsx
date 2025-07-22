@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, Image, Pressable } from 'react-native';
-import { Heart, MessageCircle, MapPin, Flag, ShoppingCart, Truck } from 'lucide-react-native';
+import { Heart, MessageCircle, MapPin, Flag, ShoppingCart, Truck, Mail } from 'lucide-react-native';
 import { PastryPost } from '@/types';
 import { Colors } from '@/constants/colors';
 import { useRouter } from 'expo-router';
@@ -12,9 +12,10 @@ interface PastryCardProps {
   onPress?: () => void;
   onReport?: (postId: string) => void;
   onPurchase?: (postId: string) => void;
+  onContact?: (userId: string) => void;
 }
 
-export const PastryCard: React.FC<PastryCardProps> = ({ post, onPress, onReport, onPurchase }) => {
+export const PastryCard: React.FC<PastryCardProps> = ({ post, onPress, onReport, onPurchase, onContact }) => {
   const router = useRouter();
 
   const handlePress = () => {
@@ -31,6 +32,15 @@ export const PastryCard: React.FC<PastryCardProps> = ({ post, onPress, onReport,
   const handlePurchase = (e: any) => {
     e.stopPropagation();
     onPurchase?.(post.id);
+  };
+
+  const handleContact = (e: any) => {
+    e.stopPropagation();
+    if (onContact && post.user?.id) {
+      onContact(post.user.id);
+    } else {
+      router.push(`/(tabs)/messages?userId=${post.user?.id}`);
+    }
   };
 
   const getLocationDisplay = () => {
@@ -90,6 +100,13 @@ export const PastryCard: React.FC<PastryCardProps> = ({ post, onPress, onReport,
               <Text style={styles.statText}>{post.comments}</Text>
             </View>
           </View>
+        </View>
+        
+        <View style={styles.actionRow}>
+          <Pressable style={styles.contactButton} onPress={handleContact}>
+            <Mail size={16} color={Colors.primary} />
+            <Text style={styles.contactButtonText}>Contact Baker</Text>
+          </Pressable>
         </View>
         
         {post.price !== undefined && (
@@ -289,5 +306,29 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontWeight: '700' as const,
     fontSize: 12,
+  },
+  actionRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+  },
+  contactButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.white,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: Colors.primary,
+  },
+  contactButtonText: {
+    color: Colors.primary,
+    fontWeight: '600' as const,
+    fontSize: 14,
+    marginLeft: 6,
   },
 });
