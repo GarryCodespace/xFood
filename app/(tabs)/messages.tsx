@@ -15,7 +15,7 @@ import { Send, ArrowLeft } from 'lucide-react-native';
 import { mockUsers } from '@/mocks/users';
 import { ChatMessage, User } from '@/types';
 import { useToast } from '@/hooks/toast-store';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/auth-store';
 
 // Mock chat data
@@ -71,42 +71,68 @@ export default function MessagesTab() {
   const { showSuccess, showError } = useToast();
   const { userId } = useLocalSearchParams<{ userId?: string }>();
   const { currentUser } = useAuth();
+  const router = useRouter();
 
   // Handle direct navigation to a specific user chat
   useEffect(() => {
+    console.log('Messages tab useEffect triggered:', { userId, currentUser: currentUser?.id });
+    
     if (userId && currentUser) {
-      // Find or create chat with the specified user
-      const existingChat = chats.find(chat => chat.otherUser.id === userId);
-      
-      if (existingChat) {
-        setSelectedChat(existingChat.id);
-      } else {
-        // Create new chat with the user
-        const targetUser = mockUsers.find(user => user.id === userId);
-        if (targetUser) {
-          const newChat = {
-            id: `chat_${currentUser.id}_${userId}`,
-            otherUser: targetUser,
-            lastMessage: '',
-            timestamp: new Date().toISOString(),
-            unreadCount: 0,
-          };
-          
-          setChats(prev => [newChat, ...prev]);
-          setSelectedChat(newChat.id);
-          
-          // Pre-fill with greeting message
-          setMessageText('Hi! I saw your bake and I\'m interested 😊');
+      try {
+        console.log('Looking for user with ID:', userId);
+        console.log('Available users:', mockUsers.map(u => ({ id: u.id, name: u.name })));
+        
+        // Find or create chat with the specified user
+        const existingChat = chats.find(chat => chat.otherUser.id === userId);
+        console.log('Existing chat found:', existingChat?.id);
+        
+        if (existingChat) {
+          setSelectedChat(existingChat.id);
+          console.log('Selected existing chat:', existingChat.id);
         } else {
-          // If user not found, show error
-          showError('Unable to contact baker right now.');
+          // Create new chat with the user
+          const targetUser = mockUsers.find(user => user.id === userId);
+          console.log('Target user found:', targetUser?.name);
+          
+          if (targetUser) {
+            const newChatId = `chat_${currentUser.id}_${userId}`;
+            const newChat = {
+              id: newChatId,
+              otherUser: targetUser,
+              lastMessage: '',
+              timestamp: new Date().toISOString(),
+              unreadCount: 0,
+            };
+            
+            console.log('Creating new chat:', newChatId);
+            setChats(prev => [newChat, ...prev]);
+            setSelectedChat(newChatId);
+            
+            // Pre-fill with greeting message
+            setMessageText('Hi! I saw your bake and I\'m interested 😊');
+            console.log('Chat created and selected');
+          } else {
+            // If user not found, show error and don't set selected chat
+            console.error('User not found in mockUsers:', userId);
+            showError('Unable to contact baker right now.');
+            setSelectedChat(null);
+          }
         }
+      } catch (error) {
+        console.error('Error setting up chat:', error);
+        showError('Unable to contact baker right now.');
+        setSelectedChat(null);
       }
+    } else if (userId && !currentUser) {
+      console.log('UserId provided but no current user');
+      showError('Please log in to send messages.');
     }
   }, [userId, currentUser]);
 
   const handleBackToChats = () => {
     setSelectedChat(null);
+    // Clear the userId parameter from the URL
+    router.setParams({ userId: undefined });
   };
 
   const handleSendMessage = async () => {
@@ -220,9 +246,22 @@ export default function MessagesTab() {
   if (selectedChat) {
     const chat = chats.find(c => c.id === selectedChat);
     if (!chat) {
-      // If chat not found, go back to chat list
+      // If chat not found, go back to chat list and show error
+      console.error('Chat not found:', selectedChat);
+      console.log('Available chats:', chats.map(c => ({ id: c.id, user: c.otherUser.name })));
+      showError('Chat not found. Please try again.');
       setSelectedChat(null);
-      return null;
+      router.setParams({ userId: undefined });
+      return (
+        <View style={styles.container}>
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Chat not found</Text>
+            <Text style={styles.emptySubtext}>
+              Please try again or go back to the chat list
+            </Text>
+          </View>
+        </View>
+      );
     }
 
     return (

@@ -36,13 +36,21 @@ export const PastryCard: React.FC<PastryCardProps> = ({ post, onPress, onReport,
 
   const handleContact = (e: any) => {
     e.stopPropagation();
-    if (post.user?.id) {
-      if (onContact) {
-        onContact(post.user.id);
+    try {
+      if (post.user?.id) {
+        console.log('PastryCard: Contacting user:', post.user.id, post.user.name);
+        if (onContact) {
+          onContact(post.user.id);
+        } else {
+          // Navigate to messages with the user ID
+          console.log('PastryCard: Navigating to messages with userId:', post.user.id);
+          router.push(`/(tabs)/messages?userId=${post.user.id}`);
+        }
       } else {
-        // Navigate to messages with the user ID
-        router.push(`/(tabs)/messages?userId=${post.user.id}`);
+        console.error('PastryCard: No user ID found for post:', post.id);
       }
+    } catch (error) {
+      console.error('PastryCard: Error handling contact:', error);
     }
   };
 

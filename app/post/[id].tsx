@@ -50,8 +50,16 @@ export default function PostDetailScreen() {
   };
 
   const handleContactBaker = () => {
-    if (post.user?.id) {
-      router.push(`/(tabs)/messages?userId=${post.user.id}`);
+    try {
+      if (post.user?.id) {
+        console.log('Navigating to messages with userId:', post.user.id);
+        router.push(`/(tabs)/messages?userId=${post.user.id}`);
+      } else {
+        console.error('No user ID found for post:', post.id);
+        // Could add a toast here if needed
+      }
+    } catch (error) {
+      console.error('Error navigating to messages:', error);
     }
   };
 
