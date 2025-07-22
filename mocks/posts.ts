@@ -11,7 +11,7 @@ export const mockPosts: PastryPost[] = [
     ingredients: ['Organic flour', 'Water', 'Salt', 'Sourdough starter'],
     image: 'https://images.unsplash.com/photo-1585478259715-4d3f6a399cbd',
     price: 8,
-    deliveryOption: 'Pickup Only',
+
     location: 'Portland, OR',
     datePosted: '2025-07-20T14:30:00Z',
     likes: 24,
@@ -29,7 +29,7 @@ export const mockPosts: PastryPost[] = [
     ingredients: ['Butter', 'Flour', 'Dark chocolate', 'Sugar', 'Yeast'],
     image: 'https://images.unsplash.com/photo-1608198093002-ad4e005484ec',
     price: 3.5,
-    deliveryOption: 'Delivery Available',
+
     location: 'Austin, TX',
     datePosted: '2025-07-19T09:15:00Z',
     likes: 42,
@@ -47,7 +47,7 @@ export const mockPosts: PastryPost[] = [
     ingredients: ['Plant-based butter', 'Flour', 'Cinnamon', 'Brown sugar', 'Vanilla'],
     image: 'https://images.unsplash.com/photo-1583527976767-a57cdcbf4a65',
     price: 4,
-    deliveryOption: 'Pickup Only',
+
     location: 'Denver, CO',
     datePosted: '2025-07-18T16:45:00Z',
     likes: 31,
@@ -65,7 +65,7 @@ export const mockPosts: PastryPost[] = [
     ingredients: ['Almond flour', 'Fresh blueberries', 'Eggs', 'Honey', 'Vanilla extract'],
     image: 'https://images.unsplash.com/photo-1607958996333-41aef7caefaa',
     price: 3,
-    deliveryOption: 'Delivery Available',
+
     location: 'Seattle, WA',
     datePosted: '2025-07-17T10:20:00Z',
     likes: 18,
@@ -83,7 +83,7 @@ export const mockPosts: PastryPost[] = [
     ingredients: ['Apples', 'Phyllo dough', 'Cinnamon', 'Raisins', 'Walnuts'],
     image: 'https://images.unsplash.com/photo-1621743478914-cc8a86d7e7b5',
     price: 12,
-    deliveryOption: 'Pickup Only',
+
     location: 'Chicago, IL',
     datePosted: '2025-07-16T13:10:00Z',
     likes: 27,

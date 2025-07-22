@@ -56,8 +56,8 @@ export const PastryCard: React.FC<PastryCardProps> = ({ post, onPress, onReport,
     if (!post.price) return null;
     const basePrice = post.price;
     const platformFee = post.platformFee || (basePrice * 0.08); // 8% platform fee
-    const deliveryFee = post.deliveryOption === 'Delivery Available' ? (post.deliveryFee || 3.99) : 0;
-    return basePrice + platformFee + deliveryFee;
+    // No delivery fee since pickup only
+    return basePrice + platformFee;
   };
 
   return (
@@ -133,12 +133,9 @@ export const PastryCard: React.FC<PastryCardProps> = ({ post, onPress, onReport,
         )}
         
         <View style={styles.deliveryBadge}>
-          <Truck size={12} color={post.deliveryOption === 'Delivery Available' ? Colors.success : Colors.textLight} />
-          <Text style={[
-            styles.deliveryText,
-            { color: post.deliveryOption === 'Delivery Available' ? Colors.success : Colors.textLight }
-          ]}>
-            {post.deliveryOption === 'Delivery Available' ? 'Delivery Available' : 'Pickup Only'}
+          <Truck size={12} color={Colors.textLight} />
+          <Text style={styles.deliveryText}>
+            Pickup Only
           </Text>
         </View>
 

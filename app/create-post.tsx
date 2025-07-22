@@ -22,7 +22,7 @@ import { useToast } from '@/hooks/toast-store';
 import { apiService } from '@/utils/api';
 import { useAuth } from '@/hooks/auth-store';
 
-const deliveryOptions = ['Pickup Only', 'Delivery Available'] as const;
+// Removed delivery options - pickup only now
 
 export default function CreatePostScreen() {
   const [title, setTitle] = useState('');
@@ -31,7 +31,7 @@ export default function CreatePostScreen() {
   const [image, setImage] = useState<string | null>(null);
   const [price, setPrice] = useState('');
   const [location, setLocation] = useState('');
-  const [deliveryOption, setDeliveryOption] = useState<'Pickup Only' | 'Delivery Available'>('Pickup Only');
+  // Removed delivery option state - pickup only
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState('');
   const [allergenTags, setAllergenTags] = useState<AllergenTag[]>([]);
@@ -134,7 +134,7 @@ export default function CreatePostScreen() {
         image,
         price: price ? parseFloat(price) : null,
         location: location.trim(),
-        deliveryOption,
+        deliveryOption: 'Pickup Only',
         tags: [...tags, ...allergenTags, ...specialTags],
         allergenTags,
         specialTags,
@@ -158,7 +158,7 @@ export default function CreatePostScreen() {
       setImage(null);
       setPrice('');
       setLocation('');
-      setDeliveryOption('Pickup Only');
+      // Removed delivery option reset
       setTags([]);
       setAllergenTags([]);
       setSpecialTags([]);
@@ -282,27 +282,10 @@ export default function CreatePostScreen() {
           </View>
           
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Delivery Option</Text>
-            <View style={styles.optionsContainer}>
-              {deliveryOptions.map((option) => (
-                <Pressable
-                  key={option}
-                  style={[
-                    styles.optionButton,
-                    deliveryOption === option && styles.selectedOption
-                  ]}
-                  onPress={() => setDeliveryOption(option)}
-                >
-                  <Text 
-                    style={[
-                      styles.optionText,
-                      deliveryOption === option && styles.selectedOptionText
-                    ]}
-                  >
-                    {option}
-                  </Text>
-                </Pressable>
-              ))}
+            <Text style={styles.label}>Fulfillment Method</Text>
+            <View style={styles.pickupOnlyContainer}>
+              <Text style={styles.pickupOnlyText}>Pickup Only</Text>
+              <Text style={styles.pickupOnlySubtext}>Delivery is not currently supported</Text>
             </View>
           </View>
           
@@ -488,31 +471,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.text,
   },
-  optionsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  optionButton: {
-    backgroundColor: Colors.white,
+  pickupOnlyContainer: {
+    backgroundColor: Colors.lightGray,
     borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    marginRight: 8,
-    marginBottom: 8,
+    padding: 16,
     borderWidth: 1,
-    borderColor: Colors.gray,
+    borderColor: Colors.border,
   },
-  selectedOption: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-  },
-  optionText: {
-    fontSize: 14,
-    color: Colors.text,
-  },
-  selectedOptionText: {
-    color: Colors.white,
+  pickupOnlyText: {
+    fontSize: 16,
     fontWeight: '600' as const,
+    color: Colors.text,
+    marginBottom: 4,
+  },
+  pickupOnlySubtext: {
+    fontSize: 12,
+    color: Colors.textLight,
   },
   tagsContainer: {
     flexDirection: 'row',

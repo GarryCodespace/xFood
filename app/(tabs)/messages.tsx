@@ -96,11 +96,14 @@ export default function MessagesTab() {
           setSelectedChat(newChat.id);
           
           // Pre-fill with greeting message
-          setMessageText('Hi! I saw your bake and I\'d love to know more 🍞');
+          setMessageText('Hi! I saw your bake and I\'m interested 😊');
+        } else {
+          // If user not found, show error
+          showError('Unable to contact baker right now.');
         }
       }
     }
-  }, [userId, currentUser, chats]);
+  }, [userId, currentUser]);
 
   const handleBackToChats = () => {
     setSelectedChat(null);
@@ -215,8 +218,12 @@ export default function MessagesTab() {
   };
 
   if (selectedChat) {
-    const chat = mockChats.find(c => c.id === selectedChat);
-    if (!chat) return null;
+    const chat = chats.find(c => c.id === selectedChat);
+    if (!chat) {
+      // If chat not found, go back to chat list
+      setSelectedChat(null);
+      return null;
+    }
 
     return (
       <KeyboardAvoidingView 

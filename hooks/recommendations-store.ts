@@ -12,6 +12,30 @@ export const [RecommendationsProvider, useRecommendations] = createContextHook((
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({});
   const [isRecommendationsEnabled, setIsRecommendationsEnabled] = useState(true);
 
+  // Ensure we always return a valid object structure
+  if (!currentUser) {
+    return {
+      recommendedPosts: [],
+      recommendedBakers: [],
+      filteredPosts: mockPosts,
+      discoveryPosts: mockPosts,
+      userInteractions: [],
+      searchFilters: {},
+      isRecommendationsEnabled: false,
+      trackInteraction: () => {},
+      applyFilters: () => {},
+      clearFilters: () => {},
+      toggleRecommendations: () => {},
+      getPostsByCategory: () => ({
+        forYou: [],
+        nearby: [],
+        trending: mockPosts.slice(0, 6),
+        fresh: mockPosts.slice(0, 6),
+      }),
+      hasActiveFilters: false,
+    };
+  }
+
   // Track user interactions
   const trackInteraction = (interaction: Omit<UserInteraction, 'id' | 'userId' | 'timestamp'>) => {
     if (!currentUser) return;

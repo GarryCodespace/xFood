@@ -31,7 +31,7 @@ export interface PastryPost {
   image: string;
   price?: number;
   isForSale?: boolean;
-  deliveryOption: 'Pickup Only' | 'Delivery Available';
+  // Removed deliveryOption - pickup only now
   location: string;
   datePosted: string;
   likes: number;
@@ -39,7 +39,7 @@ export interface PastryPost {
   tags: string[];
   allergenTags: AllergenTag[];
   specialTags: SpecialTag[];
-  deliveryFee?: number;
+  // Removed deliveryFee - pickup only
   platformFee?: number;
   status?: 'available' | 'sold' | 'reserved';
 }

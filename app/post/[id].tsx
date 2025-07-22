@@ -10,8 +10,8 @@ import {
   KeyboardAvoidingView,
   Platform
 } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
-import { Heart, MessageCircle, Share2, MapPin, DollarSign } from 'lucide-react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Heart, MessageCircle, Share2, MapPin, DollarSign, Mail } from 'lucide-react-native';
 import { mockPosts } from '@/mocks/posts';
 import { Colors } from '@/constants/colors';
 import { TagList } from '@/components/TagList';
@@ -20,6 +20,7 @@ export default function PostDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [liked, setLiked] = useState(false);
   const [comment, setComment] = useState('');
+  const router = useRouter();
 
   const post = mockPosts.find(p => p.id === id);
 
@@ -46,6 +47,12 @@ export default function PostDetailScreen() {
   const handleShare = () => {
     // In a real app, this would open the share dialog
     console.log('Sharing post:', post.id);
+  };
+
+  const handleContactBaker = () => {
+    if (post.user?.id) {
+      router.push(`/(tabs)/messages?userId=${post.user.id}`);
+    }
   };
 
   return (
@@ -82,7 +89,7 @@ export default function PostDetailScreen() {
             
             <View style={styles.deliveryBadge}>
               <Text style={styles.deliveryText}>
-                {post.deliveryOption === 'Delivery Available' ? '🚚 Delivery Available' : '🏠 Pickup Only'}
+                🏠 Pickup Only
               </Text>
             </View>
           </View>
@@ -97,6 +104,13 @@ export default function PostDetailScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Tags</Text>
             <TagList tags={post.tags} scrollable={false} />
+          </View>
+          
+          <View style={styles.contactBakerContainer}>
+            <Pressable style={styles.contactBakerButton} onPress={handleContactBaker}>
+              <Mail size={20} color={Colors.white} />
+              <Text style={styles.contactBakerText}>Contact Baker</Text>
+            </Pressable>
           </View>
           
           <View style={styles.actionsContainer}>
@@ -268,6 +282,29 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.textLight,
     marginLeft: 4,
+  },
+  contactBakerContainer: {
+    marginBottom: 16,
+    alignItems: 'center',
+  },
+  contactBakerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 24,
+    shadowColor: Colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  contactBakerText: {
+    color: Colors.white,
+    fontWeight: '600' as const,
+    fontSize: 16,
+    marginLeft: 8,
   },
   commentsSection: {
     marginBottom: 100, // Extra space for the comment input
