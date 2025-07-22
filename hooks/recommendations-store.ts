@@ -12,6 +12,21 @@ export const [RecommendationsProvider, useRecommendations] = createContextHook((
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({});
   const [isRecommendationsEnabled, setIsRecommendationsEnabled] = useState(true);
 
+  // Apply search filters
+  const applyFilters = (filters: SearchFilters) => {
+    setSearchFilters(filters);
+  };
+
+  // Clear all filters
+  const clearFilters = () => {
+    setSearchFilters({});
+  };
+
+  // Toggle recommendations on/off
+  const toggleRecommendations = () => {
+    setIsRecommendationsEnabled(prev => !prev);
+  };
+
   // Track user interactions
   const trackInteraction = (interaction: Omit<UserInteraction, 'id' | 'userId' | 'timestamp'>) => {
     if (!currentUser) return;
@@ -121,21 +136,6 @@ export const [RecommendationsProvider, useRecommendations] = createContextHook((
     };
   };
 
-  // Apply search filters
-  const applyFilters = (filters: SearchFilters) => {
-    setSearchFilters(filters);
-  };
-
-  // Clear all filters
-  const clearFilters = () => {
-    setSearchFilters({});
-  };
-
-  // Toggle recommendations on/off
-  const toggleRecommendations = () => {
-    setIsRecommendationsEnabled(prev => !prev);
-  };
-
   // Ensure we always return a valid object structure
   if (!currentUser) {
     return {
@@ -147,9 +147,9 @@ export const [RecommendationsProvider, useRecommendations] = createContextHook((
       searchFilters: {},
       isRecommendationsEnabled: false,
       trackInteraction: () => {},
-      applyFilters: () => {},
-      clearFilters: () => {},
-      toggleRecommendations: () => {},
+      applyFilters,
+      clearFilters,
+      toggleRecommendations,
       getPostsByCategory: () => ({
         forYou: [],
         nearby: [],
