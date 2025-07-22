@@ -34,6 +34,25 @@ export interface PostData {
   timestamp: string;
 }
 
+export interface RecipeData {
+  title: string;
+  description: string;
+  ingredients: any[];
+  steps: any[];
+  coverImage: string;
+  prepTime: number;
+  cookTime: number;
+  servings: number;
+  difficulty: string;
+  tags: string[];
+  allergenTags: string[];
+  specialTags: string[];
+  isPremium: boolean;
+  price?: number;
+  userId: string;
+  timestamp: string;
+}
+
 // Mock API functions - replace with real backend calls
 export const apiService = {
   async submitSupportRequest(data: SupportRequest): Promise<{ success: boolean; ticketId?: string }> {
@@ -71,6 +90,16 @@ export const apiService = {
     
     // In a real app, this would save to your database
     return { success: true, postId: `POST-${Date.now()}` };
+  },
+
+  async createRecipe(data: RecipeData): Promise<{ success: boolean; recipeId?: string }> {
+    // Simulate recipe creation
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    console.log('Recipe created:', data);
+    
+    // In a real app, this would save to your database
+    return { success: true, recipeId: `RECIPE-${Date.now()}` };
   },
 
   async processPayment(data: {

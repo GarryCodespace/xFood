@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   StyleSheet, 
   View, 
@@ -13,8 +13,10 @@ import {
 import { Colors } from '@/constants/colors';
 import { Send, ArrowLeft } from 'lucide-react-native';
 import { mockUsers } from '@/mocks/users';
-import { ChatMessage } from '@/types';
+import { ChatMessage, User } from '@/types';
 import { useToast } from '@/hooks/toast-store';
+import { useLocalSearchParams } from 'expo-router';
+import { useAuth } from '@/hooks/auth-store';
 
 // Mock chat data
 const mockChats = [
@@ -65,25 +67,69 @@ export default function MessagesTab() {
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [messageText, setMessageText] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>(mockMessages);
+  const [chats, setChats] = useState(mockChats);
   const { showSuccess, showError } = useToast();
+  const { userId } = useLocalSearchParams<{ userId?: string }>();
+  const { currentUser } = useAuth();
+
+  // Handle direct navigation to a specific user chat
+  useEffect(() => {
+    if (userId && currentUser) {
+      // Find or create chat with the specified user
+      const existingChat = chats.find(chat => chat.otherUser.id === userId);
+      
+      if (existingChat) {
+        setSelectedChat(existingChat.id);
+      } else {
+        // Create new chat with the user
+        const targetUser = mockUsers.find(user => user.id === userId);
+        if (targetUser) {
+          const newChat = {
+            id: `chat_${currentUser.id}_${userId}`,
+            otherUser: targetUser,
+            lastMessage: '',
+            timestamp: new Date().toISOString(),
+            unreadCount: 0,
+          };
+          
+          setChats(prev => [newChat, ...prev]);
+          setSelectedChat(newChat.id);
+          
+          // Pre-fill with greeting message
+          setMessageText('Hi! I saw your bake and I\'d love to know more 🍞');
+        }
+      }
+    }
+  }, [userId, currentUser, chats]);
 
   const handleBackToChats = () => {
     setSelectedChat(null);
   };
 
   const handleSendMessage = async () => {
-    if (messageText.trim() && selectedChat) {
+    if (messageText.trim() && selectedChat && currentUser) {
       try {
+        const chat = chats.find(c => c.id === selectedChat);
+        if (!chat) return;
+        
         const newMessage: ChatMessage = {
           id: Date.now().toString(),
-          senderId: '1', // Current user ID
-          receiverId: selectedChat === '1' ? '2' : '1',
+          senderId: currentUser.id,
+          receiverId: chat.otherUser.id,
           message: messageText.trim(),
           timestamp: new Date().toISOString(),
           read: false,
         };
         
         setMessages(prev => [...prev, newMessage]);
+        
+        // Update the chat's last message
+        setChats(prev => prev.map(c => 
+          c.id === selectedChat 
+            ? { ...c, lastMessage: messageText.trim(), timestamp: new Date().toISOString() }
+            : c
+        ));
+        
         setMessageText('');
         showSuccess('Message sent!');
       } catch (error) {
@@ -145,7 +191,7 @@ export default function MessagesTab() {
   );
 
   const renderMessage = ({ item }: { item: ChatMessage }) => {
-    const isCurrentUser = item.senderId === '1'; // Mock current user ID
+    const isCurrentUser = item.senderId === currentUser?.id;
     
     return (
       <View style={[
@@ -188,8 +234,8 @@ export default function MessagesTab() {
         
         <FlatList
           data={messages.filter(msg => 
-            (msg.senderId === '1' && msg.receiverId === selectedChat) ||
-            (msg.senderId === selectedChat && msg.receiverId === '1')
+            (msg.senderId === currentUser?.id && msg.receiverId === chat.otherUser.id) ||
+            (msg.senderId === chat.otherUser.id && msg.receiverId === currentUser?.id)
           )}
           keyExtractor={(item) => item.id}
           renderItem={renderMessage}
@@ -224,7 +270,7 @@ export default function MessagesTab() {
   return (
     <View style={styles.container}>
       <FlatList
-        data={mockChats}
+        data={chats}
         keyExtractor={(item) => item.id}
         renderItem={renderChatItem}
         style={styles.chatsList}

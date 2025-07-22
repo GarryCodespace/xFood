@@ -17,7 +17,10 @@ import { Colors } from '@/constants/colors';
 import { Camera, X, Plus, Clock, Users, DollarSign } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { AllergenTagList } from '@/components/AllergenTagList';
-import { AllergenTag, SpecialTag, RecipeIngredient, RecipeStep } from '@/types';
+import { AllergenTag, SpecialTag, RecipeIngredient, RecipeStep, Recipe } from '@/types';
+import { useAuth } from '@/hooks/auth-store';
+import { useToast } from '@/hooks/toast-store';
+import { apiService, RecipeData } from '@/utils/api';
 
 const difficultyLevels = ['Easy', 'Medium', 'Hard'] as const;
 
@@ -44,6 +47,8 @@ export default function CreateRecipeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   
   const router = useRouter();
+  const { currentUser } = useAuth();
+  const { showSuccess, showError } = useToast();
 
   const pickCoverImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -144,21 +149,55 @@ export default function CreateRecipeScreen() {
   const handleSubmit = async () => {
     const error = validateForm();
     if (error) {
-      Alert.alert('Validation Error', error);
+      showError(error);
+      return;
+    }
+
+    if (!currentUser) {
+      showError('You must be logged in to create a recipe');
       return;
     }
 
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Create the recipe data for API
+      const recipeData: RecipeData = {
+        title: title.trim(),
+        description: description.trim(),
+        ingredients: ingredients.filter(ing => ing.name.trim()),
+        steps: steps.filter(step => step.instruction.trim()),
+        coverImage: coverImage || '',
+        prepTime: parseInt(prepTime) || 0,
+        cookTime: parseInt(cookTime) || 0,
+        servings: parseInt(servings) || 1,
+        difficulty,
+        tags,
+        allergenTags,
+        specialTags,
+        isPremium,
+        price: isPremium ? parseFloat(price) || 0 : undefined,
+        userId: currentUser.id,
+        timestamp: new Date().toISOString(),
+      };
+
+      // Call API to create recipe
+      const result = await apiService.createRecipe(recipeData);
+      
+      if (result.success) {
+        showSuccess('Recipe published successfully!');
+        // Navigate to recipes tab
+        router.replace('/(tabs)/recipes');
+      } else {
+        throw new Error('Failed to create recipe');
+      }
+      
+    } catch (error) {
+      console.error('Failed to create recipe:', error);
+      showError('Failed to publish recipe. Please try again.');
+    } finally {
       setIsLoading(false);
-      Alert.alert(
-        'Recipe Created!',
-        'Your recipe has been published to the marketplace.',
-        [{ text: 'OK', onPress: () => router.replace('/recipes') }]
-      );
-    }, 2000);
+    }
   };
 
   return (

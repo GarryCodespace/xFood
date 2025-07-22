@@ -4,6 +4,7 @@ export const mockUsers: User[] = [
   {
     id: '1',
     name: 'Emma Baker',
+    email: 'emma.baker@example.com',
     avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
     kitchenType: 'Home Bakery',
     location: 'Portland, OR',
@@ -17,6 +18,7 @@ export const mockUsers: User[] = [
   {
     id: '2',
     name: 'Michael Dough',
+    email: 'michael.dough@example.com',
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e',
     kitchenType: 'Hobbyist',
     location: 'Seattle, WA',
@@ -29,6 +31,7 @@ export const mockUsers: User[] = [
   {
     id: '3',
     name: 'Sophia Crust',
+    email: 'sophia.crust@example.com',
     avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80',
     kitchenType: 'Professional',
     location: 'Austin, TX',
@@ -42,6 +45,7 @@ export const mockUsers: User[] = [
   {
     id: '4',
     name: 'James Flour',
+    email: 'james.flour@example.com',
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e',
     kitchenType: 'Hobbyist',
     location: 'Chicago, IL',
@@ -54,6 +58,7 @@ export const mockUsers: User[] = [
   {
     id: '5',
     name: 'Olivia Sweet',
+    email: 'olivia.sweet@example.com',
     avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2',
     kitchenType: 'Home Bakery',
     location: 'Denver, CO',

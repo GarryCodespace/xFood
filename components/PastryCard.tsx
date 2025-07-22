@@ -36,10 +36,13 @@ export const PastryCard: React.FC<PastryCardProps> = ({ post, onPress, onReport,
 
   const handleContact = (e: any) => {
     e.stopPropagation();
-    if (onContact && post.user?.id) {
-      onContact(post.user.id);
-    } else {
-      router.push(`/(tabs)/messages?userId=${post.user?.id}`);
+    if (post.user?.id) {
+      if (onContact) {
+        onContact(post.user.id);
+      } else {
+        // Navigate to messages with the user ID
+        router.push(`/(tabs)/messages?userId=${post.user.id}`);
+      }
     }
   };
 
