@@ -10,6 +10,7 @@ import { SupportProvider } from "@/hooks/support-store";
 import { ToastProvider, useToast } from "@/hooks/toast-store";
 import { Toast } from "@/components/Toast";
 import { Colors } from "@/constants/colors";
+import { trpc, trpcClient } from "@/lib/trpc";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -187,19 +188,21 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <RecommendationsProvider>
-          <SupportProvider>
-            <ToastProvider>
-              <GestureHandlerRootView style={{ flex: 1 }}>
-                <StatusBar style="dark" />
-                <RootLayoutNav />
-              </GestureHandlerRootView>
-            </ToastProvider>
-          </SupportProvider>
-        </RecommendationsProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <trpc.Provider client={trpcClient} queryClient={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <RecommendationsProvider>
+            <SupportProvider>
+              <ToastProvider>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                  <StatusBar style="dark" />
+                  <RootLayoutNav />
+                </GestureHandlerRootView>
+              </ToastProvider>
+            </SupportProvider>
+          </RecommendationsProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </trpc.Provider>
   );
 }
