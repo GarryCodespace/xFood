@@ -102,6 +102,8 @@ export const apiService = {
     return { success: true, recipeId: `RECIPE-${Date.now()}` };
   },
 
+  // Payment processing is now handled by Stripe via tRPC
+  // This method is kept for backward compatibility but should not be used
   async processPayment(data: {
     amount: number;
     currency: string;
@@ -110,19 +112,7 @@ export const apiService = {
     itemId: string;
     platformFeePercent: number;
   }): Promise<{ success: boolean; paymentId?: string; error?: string }> {
-    // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    const platformFee = data.amount * (data.platformFeePercent / 100);
-    const sellerAmount = data.amount - platformFee;
-    
-    console.log('Payment processed:', {
-      ...data,
-      platformFee,
-      sellerAmount,
-    });
-    
-    // In a real app, this would process via Stripe
-    return { success: true, paymentId: `PAY-${Date.now()}` };
+    console.warn('processPayment is deprecated. Use Stripe integration via tRPC instead.');
+    return { success: false, error: 'Use Stripe integration instead' };
   }
 };

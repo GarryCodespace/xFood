@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, Pressable, Alert, ActivityIndicator, Modal } from 'react-native';
+import { StyleSheet, View, Text, Pressable, Alert, ActivityIndicator, Modal, Platform, Linking } from 'react-native';
 import { Colors } from '@/constants/colors';
 import { CreditCard, Lock, CheckCircle } from 'lucide-react-native';
-import { apiService } from '@/utils/api';
+import { trpc } from '@/lib/trpc';
+import { stripePromise } from '@/lib/stripe';
 
 interface PaymentProcessorProps {
   visible: boolean;
@@ -40,25 +41,34 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
     setIsProcessing(true);
 
     try {
-      const result = await apiService.processPayment({
-        amount,
-        currency,
+      // Create checkout session
+      const result = await trpc.payments.createCheckoutSession.mutate({
+        itemName: itemTitle,
+        itemPrice: amount,
+        userEmail: 'user@example.com', // You should get this from your auth context
         sellerId,
         buyerId,
         itemId,
         platformFeePercent,
       });
 
-      if (result.success && result.paymentId) {
-        setIsComplete(true);
-        onSuccess?.(result.paymentId);
+      if (result.success && result.sessionId) {
+        if (Platform.OS === 'web') {
+          // For web, redirect to Stripe Checkout
+          if (result.url) {
+            window.location.href = result.url;
+          }
+        } else {
+          // For mobile, open Stripe Checkout in browser
+          if (result.url) {
+            await Linking.openURL(result.url);
+          }
+        }
         
-        setTimeout(() => {
-          setIsComplete(false);
-          onClose();
-        }, 2000);
+        // Close the modal since user is being redirected
+        onClose();
       } else {
-        throw new Error(result.error || 'Payment failed');
+        throw new Error(result.error || 'Payment session creation failed');
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Payment failed';
