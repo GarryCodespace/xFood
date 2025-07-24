@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, Pressable, Alert, ActivityIndicator, Modal, Platform, Linking } from 'react-native';
 import { Colors } from '@/constants/colors';
 import { CreditCard, Lock, CheckCircle } from 'lucide-react-native';
-import { trpc } from '@/lib/trpc';
+import { trpcClient } from '@/lib/trpc';
 import { stripePromise } from '@/lib/stripe';
 
 interface PaymentProcessorProps {
@@ -42,7 +42,7 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
 
     try {
       // Create checkout session
-      const result = await trpc.payments.createCheckoutSession.mutate({
+      const result = await trpcClient.payments.createCheckoutSession.mutate({
         itemName: itemTitle,
         itemPrice: amount,
         userEmail: 'user@example.com', // You should get this from your auth context

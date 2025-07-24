@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, Pressable, ActivityIndicator } from 'react-nati
 import { useLocalSearchParams, router } from 'expo-router';
 import { Colors } from '@/constants/colors';
 import { CheckCircle, ArrowLeft } from 'lucide-react-native';
-import { trpc } from '@/lib/trpc';
+import { trpcClient } from '@/lib/trpc';
 
 export default function PaymentSuccessScreen() {
   const { session_id } = useLocalSearchParams<{ session_id: string }>();
@@ -19,7 +19,7 @@ export default function PaymentSuccessScreen() {
 
   const verifyPayment = async () => {
     try {
-      const result = await trpc.payments.verifySession.query({
+      const result = await trpcClient.payments.verifySession.query({
         sessionId: session_id as string,
       });
 
