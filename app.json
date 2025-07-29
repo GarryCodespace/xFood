@@ -28,7 +28,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "app.rork.community-pastry-sharing-app",
+      "package": "com.garryyuan.xfood",
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
