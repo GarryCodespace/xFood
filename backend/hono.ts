@@ -22,7 +22,7 @@ app.post("/stripe/webhook", async (c) => {
     }
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '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', {
-      apiVersion: '2025-06-30.basil',
+      apiVersion: '2024-12-18.acacia',
     });
 
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
