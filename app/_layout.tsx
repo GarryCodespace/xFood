@@ -118,6 +118,26 @@ function AuthenticatedStack() {
             }} 
           />
           <Stack.Screen 
+            name="payment-success" 
+            options={{ 
+              title: "Payment Success",
+              headerShown: false,
+            }} 
+          />
+          <Stack.Screen 
+            name="payment-cancelled" 
+            options={{ 
+              title: "Payment Cancelled",
+              headerShown: false,
+            }} 
+          />
+          <Stack.Screen 
+            name="orders" 
+            options={{ 
+              title: "My Orders",
+            }} 
+          />
+          <Stack.Screen 
             name="taste-profile-setup" 
             options={{ 
               title: "Taste Profile Setup",
