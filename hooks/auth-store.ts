@@ -10,28 +10,45 @@ const CURRENT_USER_KEY = 'pastry_app_current_user';
 export const [AuthProvider, useAuth] = createContextHook(() => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Load user from storage on mount
   useEffect(() => {
+    let isMounted = true;
+    
     const loadUser = async () => {
       try {
         console.log('Loading user from storage...');
+        setError(null);
+        
         const storedUser = await AsyncStorage.getItem(CURRENT_USER_KEY);
         console.log('Stored user:', storedUser ? 'found' : 'not found');
         
+        if (!isMounted) return;
+        
         if (storedUser) {
-          const parsedUser = JSON.parse(storedUser);
-          // Validate the user object has required fields
-          if (parsedUser && parsedUser.id && parsedUser.name) {
-            console.log('Valid user found, setting current user');
-            setCurrentUser(parsedUser);
-          } else {
-            console.warn('Invalid user data in storage, clearing...');
+          try {
+            const parsedUser = JSON.parse(storedUser);
+            // Validate the user object has required fields
+            if (parsedUser && parsedUser.id && parsedUser.name) {
+              console.log('Valid user found, setting current user');
+              if (isMounted) {
+                setCurrentUser(parsedUser);
+              }
+            } else {
+              console.warn('Invalid user data in storage, clearing...');
+              await AsyncStorage.removeItem(CURRENT_USER_KEY);
+            }
+          } catch (parseError) {
+            console.error('Failed to parse stored user data:', parseError);
             await AsyncStorage.removeItem(CURRENT_USER_KEY);
           }
         }
       } catch (error) {
         console.error('Failed to load user:', error);
+        if (isMounted) {
+          setError('Failed to load user data');
+        }
         // Clear corrupted data
         try {
           await AsyncStorage.removeItem(CURRENT_USER_KEY);
@@ -40,13 +57,19 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
         }
       } finally {
         console.log('Auth loading complete');
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     // Add a small delay to prevent race conditions
-    const timer = setTimeout(loadUser, 100);
-    return () => clearTimeout(timer);
+    const timer = setTimeout(loadUser, 200);
+    
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -107,6 +130,7 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
     currentUser,
     isLoading,
     isAuthenticated: !!currentUser,
+    error,
     login,
     logout,
     updateProfile,
