@@ -136,46 +136,30 @@ export const [RecommendationsProvider, useRecommendations] = createContextHook((
     };
   };
 
-  // Ensure we always return a valid object structure
-  if (!currentUser) {
-    return {
-      recommendedPosts: [],
-      recommendedBakers: [],
-      filteredPosts: mockPosts,
-      discoveryPosts: mockPosts,
-      userInteractions: [],
-      searchFilters: {},
-      isRecommendationsEnabled: false,
-      trackInteraction: () => {},
-      applyFilters,
-      clearFilters,
-      toggleRecommendations,
-      getPostsByCategory: () => ({
-        forYou: [],
-        nearby: [],
-        trending: mockPosts.slice(0, 6),
-        fresh: mockPosts.slice(0, 6),
-      }),
-      hasActiveFilters: false,
-    };
-  }
+  // Create fallback function for when user is not available
+  const getPostsByCategoryFallback = () => ({
+    forYou: [],
+    nearby: [],
+    trending: mockPosts.slice(0, 6),
+    fresh: mockPosts.slice(0, 6),
+  });
 
   return {
     // Data
-    recommendedPosts,
-    recommendedBakers,
-    filteredPosts,
-    discoveryPosts,
+    recommendedPosts: currentUser ? recommendedPosts : [],
+    recommendedBakers: currentUser ? recommendedBakers : [],
+    filteredPosts: currentUser ? filteredPosts : mockPosts,
+    discoveryPosts: currentUser ? discoveryPosts : mockPosts,
     userInteractions,
     searchFilters,
-    isRecommendationsEnabled,
+    isRecommendationsEnabled: currentUser ? isRecommendationsEnabled : false,
     
     // Actions
     trackInteraction,
     applyFilters,
     clearFilters,
     toggleRecommendations,
-    getPostsByCategory,
+    getPostsByCategory: currentUser ? getPostsByCategory : getPostsByCategoryFallback,
     
     // Utilities
     hasActiveFilters: Object.keys(searchFilters).length > 0,

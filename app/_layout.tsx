@@ -9,13 +9,36 @@ import { RecommendationsProvider } from "@/hooks/recommendations-store";
 import { SupportProvider } from "@/hooks/support-store";
 import { ToastProvider, useToast } from "@/hooks/toast-store";
 import { Toast } from "@/components/Toast";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Colors } from "@/constants/colors";
 import { trpc, trpcClient } from "@/lib/trpc";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: (failureCount, error) => {
+        // Don't retry on 4xx errors
+        if (error && typeof error === 'object' && 'status' in error) {
+          const status = error.status as number;
+          if (status >= 400 && status < 500) {
+            return false;
+          }
+        }
+        // Retry up to 2 times for other errors
+        return failureCount < 2;
+      },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes
+    },
+    mutations: {
+      retry: false, // Don't retry mutations by default
+    },
+  },
+});
 
 function AuthenticatedStack() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -216,7 +239,9 @@ export default function RootLayout() {
               <ToastProvider>
                 <GestureHandlerRootView style={{ flex: 1 }}>
                   <StatusBar style="dark" />
-                  <RootLayoutNav />
+                  <ErrorBoundary>
+                    <RootLayoutNav />
+                  </ErrorBoundary>
                 </GestureHandlerRootView>
               </ToastProvider>
             </SupportProvider>
