@@ -17,16 +17,31 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
       try {
         const storedUser = await AsyncStorage.getItem(CURRENT_USER_KEY);
         if (storedUser) {
-          setCurrentUser(JSON.parse(storedUser));
+          const parsedUser = JSON.parse(storedUser);
+          // Validate the user object has required fields
+          if (parsedUser && parsedUser.id && parsedUser.name) {
+            setCurrentUser(parsedUser);
+          } else {
+            console.warn('Invalid user data in storage, clearing...');
+            await AsyncStorage.removeItem(CURRENT_USER_KEY);
+          }
         }
       } catch (error) {
         console.error('Failed to load user:', error);
+        // Clear corrupted data
+        try {
+          await AsyncStorage.removeItem(CURRENT_USER_KEY);
+        } catch (clearError) {
+          console.error('Failed to clear corrupted user data:', clearError);
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadUser();
+    // Add a small delay to prevent race conditions
+    const timer = setTimeout(loadUser, 50);
+    return () => clearTimeout(timer);
   }, []);
 
   const login = async (email: string, password: string) => {

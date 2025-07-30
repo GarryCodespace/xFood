@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
+import { View, Text } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import { AuthProvider, useAuth } from "@/hooks/auth-store";
@@ -45,7 +46,11 @@ function AuthenticatedStack() {
   const { toast, hideToast } = useToast();
 
   if (isLoading) {
-    return null; // Or a loading screen
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.background }}>
+        <Text style={{ color: Colors.text, fontSize: 16 }}>Loading...</Text>
+      </View>
+    );
   }
 
   return (
@@ -227,27 +232,36 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   useEffect(() => {
-    SplashScreen.hideAsync();
+    const hideSplash = async () => {
+      try {
+        await SplashScreen.hideAsync();
+      } catch (error) {
+        console.warn('Error hiding splash screen:', error);
+      }
+    };
+    
+    // Add a small delay to ensure everything is loaded
+    setTimeout(hideSplash, 100);
   }, []);
 
   return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <RecommendationsProvider>
-            <SupportProvider>
-              <ToastProvider>
-                <GestureHandlerRootView style={{ flex: 1 }}>
-                  <StatusBar style="dark" />
-                  <ErrorBoundary>
+    <ErrorBoundary>
+      <trpc.Provider client={trpcClient} queryClient={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <RecommendationsProvider>
+              <SupportProvider>
+                <ToastProvider>
+                  <GestureHandlerRootView style={{ flex: 1 }}>
+                    <StatusBar style="dark" />
                     <RootLayoutNav />
-                  </ErrorBoundary>
-                </GestureHandlerRootView>
-              </ToastProvider>
-            </SupportProvider>
-          </RecommendationsProvider>
-        </AuthProvider>
-      </QueryClientProvider>
-    </trpc.Provider>
+                  </GestureHandlerRootView>
+                </ToastProvider>
+              </SupportProvider>
+            </RecommendationsProvider>
+          </AuthProvider>
+        </QueryClientProvider>
+      </trpc.Provider>
+    </ErrorBoundary>
   );
 }
