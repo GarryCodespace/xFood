@@ -61,21 +61,21 @@ function AuthenticatedStack() {
         type={toast.type}
         onHide={hideToast}
       />
-    <Stack
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: Colors.white,
-        },
-        headerShadowVisible: false,
-        headerTintColor: Colors.text,
-        headerTitleStyle: {
-          fontWeight: '600',
-        },
-        contentStyle: {
-          backgroundColor: Colors.background,
-        },
-      }}
-    >
+      <Stack
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: Colors.white,
+          },
+          headerShadowVisible: false,
+          headerTintColor: Colors.text,
+          headerTitleStyle: {
+            fontWeight: '600',
+          },
+          contentStyle: {
+            backgroundColor: Colors.background,
+          },
+        }}
+      >
       {isAuthenticated ? (
         <>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -221,7 +221,7 @@ function AuthenticatedStack() {
           />
         </>
       )}
-    </Stack>
+      </Stack>
     </>
   );
 }
