@@ -15,11 +15,15 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
   useEffect(() => {
     const loadUser = async () => {
       try {
+        console.log('Loading user from storage...');
         const storedUser = await AsyncStorage.getItem(CURRENT_USER_KEY);
+        console.log('Stored user:', storedUser ? 'found' : 'not found');
+        
         if (storedUser) {
           const parsedUser = JSON.parse(storedUser);
           // Validate the user object has required fields
           if (parsedUser && parsedUser.id && parsedUser.name) {
+            console.log('Valid user found, setting current user');
             setCurrentUser(parsedUser);
           } else {
             console.warn('Invalid user data in storage, clearing...');
@@ -35,12 +39,13 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
           console.error('Failed to clear corrupted user data:', clearError);
         }
       } finally {
+        console.log('Auth loading complete');
         setIsLoading(false);
       }
     };
 
     // Add a small delay to prevent race conditions
-    const timer = setTimeout(loadUser, 50);
+    const timer = setTimeout(loadUser, 100);
     return () => clearTimeout(timer);
   }, []);
 

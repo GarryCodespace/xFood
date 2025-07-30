@@ -20,17 +20,6 @@ export const trpcClient = trpc.createClient({
     httpLink({
       url: `${getBaseUrl()}/api/trpc`,
       transformer: superjson,
-      fetch: (url, options) => {
-        return fetch(url, {
-          ...options,
-          // Add timeout to prevent hanging requests
-          signal: AbortSignal.timeout(10000), // 10 second timeout
-        }).catch((error) => {
-          console.warn('tRPC request failed:', error);
-          // Return a rejected promise to maintain error handling flow
-          throw error;
-        });
-      },
     }),
   ],
 });

@@ -38,7 +38,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
             <AlertTriangle size={48} color={Colors.error} />
             <Text style={styles.title}>Something went wrong</Text>
             <Text style={styles.message}>
-              We're sorry, but something unexpected happened. Please try again.
+              We&apos;re sorry, but something unexpected happened. Please try again.
             </Text>
             {__DEV__ && this.state.error && (
               <Text style={styles.errorDetails}>
