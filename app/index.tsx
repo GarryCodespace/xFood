@@ -1,99 +1,109 @@
 import { Redirect } from 'expo-router';
-import { useAuth } from '@/hooks/auth-store';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Colors } from '@/constants/colors';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { router } from 'expo-router';
 
 export default function IndexScreen() {
-  const { isAuthenticated, isLoading, error } = useAuth();
-  const [showContent, setShowContent] = useState(false);
-  const [debugMode, setDebugMode] = useState(false);
+  const [showDebug, setShowDebug] = useState(false);
 
-  console.log('IndexScreen render - isLoading:', isLoading, 'isAuthenticated:', isAuthenticated);
+  console.log('IndexScreen rendering - simple test version');
 
-  useEffect(() => {
-    // Add a small delay to prevent flash of content
-    const timer = setTimeout(() => {
-      setShowContent(true);
-    }, 100);
-    
-    // Enable debug mode after 5 seconds if still loading
-    const debugTimer = setTimeout(() => {
-      if (isLoading) {
-        console.log('Enabling debug mode due to long loading time');
-        setDebugMode(true);
-      }
-    }, 5000);
-    
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(debugTimer);
-    };
-  }, [isLoading]);
-
-  if (!showContent) {
-    console.log('Showing initial loading screen');
+  if (showDebug) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-        <Text style={styles.loadingText}>Starting app...</Text>
+      <View style={styles.debugContainer}>
+        <Text style={styles.debugTitle}>Debug Screen</Text>
+        <Text style={styles.debugText}>App is working!</Text>
+        <Text style={styles.debugText}>Platform: {require('react-native').Platform.OS}</Text>
+        <Pressable 
+          style={styles.button}
+          onPress={() => router.push('/login')}
+        >
+          <Text style={styles.buttonText}>Go to Login</Text>
+        </Pressable>
+        <Pressable 
+          style={styles.button}
+          onPress={() => router.push('/(tabs)')}
+        >
+          <Text style={styles.buttonText}>Go to Tabs</Text>
+        </Pressable>
       </View>
     );
   }
 
-  if (isLoading && !debugMode) {
-    console.log('Showing auth loading screen');
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-        <Text style={styles.loadingText}>Loading...</Text>
-        <Text style={styles.debugText}>Checking authentication...</Text>
-        {error && (
-          <Text style={styles.errorText}>Error: {error}</Text>
-        )}
-      </View>
-    );
-  }
-
-  if (debugMode) {
-    console.log('Debug mode: bypassing auth check');
-    return <Redirect href="/login" />;
-  }
-
-  if (isAuthenticated) {
-    console.log('User authenticated, redirecting to tabs');
-    return <Redirect href="/(tabs)" />;
-  }
-
-  console.log('User not authenticated, redirecting to login');
-  return <Redirect href="/login" />;
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Pastry Share</Text>
+      <Text style={styles.subtitle}>Welcome to the app!</Text>
+      <Pressable 
+        style={styles.button}
+        onPress={() => setShowDebug(true)}
+      >
+        <Text style={styles.buttonText}>Show Debug Info</Text>
+      </Pressable>
+      <Pressable 
+        style={styles.button}
+        onPress={() => router.push('/login')}
+      >
+        <Text style={styles.buttonText}>Go to Login</Text>
+      </Pressable>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: {
+  container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: Colors.background,
-    gap: 16,
     padding: 20,
   },
-  loadingText: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: '500' as const,
+  debugContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.background,
+    padding: 20,
+    gap: 16,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: '700' as const,
+    color: Colors.primary,
+    marginBottom: 8,
     textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 18,
+    color: Colors.text,
+    marginBottom: 32,
+    textAlign: 'center',
+  },
+  debugTitle: {
+    fontSize: 24,
+    fontWeight: '700' as const,
+    color: Colors.text,
+    marginBottom: 16,
   },
   debugText: {
+    fontSize: 16,
     color: Colors.textLight,
-    fontSize: 14,
     textAlign: 'center',
-    marginTop: 8,
+    marginBottom: 8,
   },
-  errorText: {
-    color: Colors.error,
-    fontSize: 14,
+  button: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+    minWidth: 200,
+  },
+  buttonText: {
+    color: Colors.white,
+    fontSize: 16,
+    fontWeight: '600' as const,
     textAlign: 'center',
-    marginTop: 8,
   },
 });

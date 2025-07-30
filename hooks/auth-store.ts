@@ -63,8 +63,8 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
       }
     };
 
-    // Add a small delay to prevent race conditions
-    const timer = setTimeout(loadUser, 200);
+    // Reduce delay to make app load faster
+    const timer = setTimeout(loadUser, 100);
     
     return () => {
       isMounted = false;
