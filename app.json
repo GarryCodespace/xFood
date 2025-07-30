@@ -29,6 +29,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.garryyuan.xfood",
+      "versionCode": 2,
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
